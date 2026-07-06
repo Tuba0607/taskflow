@@ -3,7 +3,10 @@
     <!-- Task filters (All / Active / Completed) -->
     <TaskFilters />
 
-    <div class="divide-y divide-slate-100">
+    <div
+      v-if="tasksStore.filteredTasks.length"
+      class="divide-y divide-slate-100"
+    >
       <!-- Render filtered tasks from Pinia store -->
       <div
         v-for="task in tasksStore.filteredTasks"
@@ -110,7 +113,7 @@
 
           <button
             class="rounded-xl px-3 py-1 text-sm text-slate-400 hover:text-red-600"
-            @click="tasksStore.deleteTask(task.id)"
+            @click="openDeleteModal(task.id)"
           >
             <Icon
               name="lucide:trash-2"
@@ -121,6 +124,27 @@
         </div>
       </div>
     </div>
+    <div
+      v-else
+      class="flex flex-col items-center justify-center px-6 py-16 text-center"
+    >
+      <div
+        class="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-50 text-violet-600"
+      >
+        <Icon name="lucide:clipboard-list" size="28" />
+      </div>
+
+      <h3 class="text-lg font-semibold text-slate-900">No tasks found</h3>
+
+      <p class="mt-1 max-w-sm text-sm text-slate-500">
+        Try another search or create a new task to get started.
+      </p>
+    </div>
+    <DeleteTaskModal
+      v-if="showDeleteModal"
+      @cancel="cancelDelete"
+      @confirm="confirmDelete"
+    />
   </section>
 </template>
 
@@ -131,6 +155,8 @@ const tasksStore = useTasksStore();
 const editingTaskId = ref<number | null>(null);
 const editingTitle = ref("");
 const editingPriority = ref<TaskPriority>("Low");
+const showDeleteModal = ref(false);
+const taskToDelete = ref<number | null>(null);
 
 function startEdit(task: {
   id: number;
@@ -160,5 +186,23 @@ function cancelEdit() {
 }
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString("tr-TR");
+}
+function openDeleteModal(id: number) {
+  taskToDelete.value = id;
+  showDeleteModal.value = true;
+}
+
+function confirmDelete() {
+  if (taskToDelete.value === null) return;
+
+  tasksStore.deleteTask(taskToDelete.value);
+
+  taskToDelete.value = null;
+  showDeleteModal.value = false;
+}
+
+function cancelDelete() {
+  taskToDelete.value = null;
+  showDeleteModal.value = false;
 }
 </script>

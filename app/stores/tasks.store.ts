@@ -15,6 +15,7 @@ export const useTasksStore = defineStore("tasks", {
   state: () => ({
     filter: "All" as TaskFilter,
     sortDirection: "desc" as "asc" | "desc",
+    searchQuery: "",
     tasks: [
       {
         id: 1,
@@ -55,6 +56,13 @@ export const useTasksStore = defineStore("tasks", {
 
       if (state.filter === "Completed") {
         tasks = tasks.filter((task) => task.done);
+      }
+      const query = state.searchQuery.trim().toLowerCase();
+
+      if (query) {
+        tasks = tasks.filter((task) =>
+          task.title.toLowerCase().includes(query),
+        );
       }
 
       tasks.sort((a, b) => {

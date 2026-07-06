@@ -9,7 +9,7 @@
         >
           ✓
         </div>
-        <h1 class="text-xl font-bold">TaskFlow</h1>
+        <h2 class="text-xl font-bold">TaskFlow</h2>
       </div>
 
       <nav class="space-y-2">
@@ -37,3 +37,6 @@
     </aside>
   </div>
 </template>
+<script setup lang="ts">
+const isDark = ref(false);
+</script>
